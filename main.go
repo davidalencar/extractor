@@ -7,21 +7,23 @@ import (
 	"io"
 	"log"
 	"path/filepath"
+	"time"
 
 	"github.com/schollz/progressbar"
 )
 
-func ReadTxtFile(txtFile io.ReadCloser) {
+func readTxtFile(txtFile io.ReadCloser) {
 
 	scanner := bufio.NewScanner(txtFile)
 
 	for scanner.Scan() {
 		//fmt.Println(scanner.Text())
+		time.Sleep(1000 * time.Millisecond)
 		break
 	}
 }
 
-func ExtractTxtFileFrom(zippedFileName string) io.ReadCloser {
+func extractTxtFileFrom(zippedFileName string) {
 
 	r, err := zip.OpenReader(zippedFileName)
 	if err != nil {
@@ -34,12 +36,12 @@ func ExtractTxtFileFrom(zippedFileName string) io.ReadCloser {
 		if err != nil {
 			log.Fatal(err)
 		}
-		return ftxt
+		readTxtFile(ftxt)
 	}
-	return nil
+
 }
 
-func RetriveAllZippedFiles(dir string) []string {
+func retriveAllZippedFiles(dir string) []string {
 
 	files, err := filepath.Glob("../govdata/*.zip")
 	if err != nil {
@@ -51,19 +53,16 @@ func RetriveAllZippedFiles(dir string) []string {
 
 func main() {
 
-	files := RetriveAllZippedFiles("../govdata/*.zip")
+	files := retriveAllZippedFiles("../govdata/*.zip")
 
 	bar := progressbar.New(len(files))
 
 	for _, fileName := range files {
 
-		txtFile := ExtractTxtFileFrom(fileName)
-		if txtFile != nil {
-			ReadTxtFile(txtFile)
-		}
-
 		bar.Clear()
 		bar.Describe(fmt.Sprintf("Extracting from %q ", filepath.Base(fileName)))
+		bar.RenderBlank()
+		extractTxtFileFrom(fileName)
 		bar.Add(1)
 
 	}
