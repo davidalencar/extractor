@@ -29,14 +29,14 @@ func ReadFile(fileName string) {
 
 		for scanner.Scan() {
 			//fmt.Println(scanner.Text())
-			//break
+
 		}
 	}
 }
 
 func main() {
 
-	files, err := filepath.Glob("../govdata/*")
+	files, err := filepath.Glob("../govdata/*.zip")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -46,9 +46,11 @@ func main() {
 	for _, fileName := range files {
 
 		ReadFile(fileName)
+		bar.Clear()
+		bar.Describe(fmt.Sprintf("Extracting from %q	", filepath.Base(fileName)))
 		bar.Add(1)
-		fmt.Printf("\n Extracting from '%s'", fileName)
-		fmt.Printf("\n")
+
 	}
 
+	fmt.Println()
 }
