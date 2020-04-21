@@ -4,15 +4,26 @@ import (
 	"archive/zip"
 	"bufio"
 	"fmt"
+	"io"
 	"log"
 	"path/filepath"
 
 	"github.com/schollz/progressbar"
 )
 
-func ReadFile(fileName string) {
+func ReadTxtFile(txtFile io.ReadCloser) {
 
-	r, err := zip.OpenReader(fileName)
+	scanner := bufio.NewScanner(txtFile)
+
+	for scanner.Scan() {
+		//fmt.Println(scanner.Text())
+		break
+	}
+}
+
+func ExtractTxtFileFrom(zippedFileName string) io.ReadCloser {
+
+	r, err := zip.OpenReader(zippedFileName)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -23,30 +34,36 @@ func ReadFile(fileName string) {
 		if err != nil {
 			log.Fatal(err)
 		}
-
-		scanner := bufio.NewScanner(ftxt)
-
-		for scanner.Scan() {
-			//fmt.Println(scanner.Text())
-
-		}
+		return ftxt
 	}
+	return nil
 }
 
-func main() {
+func RetriveAllZippedFiles(dir string) []string {
 
 	files, err := filepath.Glob("../govdata/*.zip")
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	return files
+}
+
+func main() {
+
+	files := RetriveAllZippedFiles("../govdata/*.zip")
+
 	bar := progressbar.New(len(files))
 
 	for _, fileName := range files {
 
-		ReadFile(fileName)
+		txtFile := ExtractTxtFileFrom(fileName)
+		if txtFile != nil {
+			ReadTxtFile(txtFile)
+		}
+
 		bar.Clear()
-		bar.Describe(fmt.Sprintf("Extracting from %q	", filepath.Base(fileName)))
+		bar.Describe(fmt.Sprintf("Extracting from %q ", filepath.Base(fileName)))
 		bar.Add(1)
 
 	}
