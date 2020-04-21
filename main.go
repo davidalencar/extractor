@@ -1,12 +1,37 @@
 package main
 
 import (
+	"archive/zip"
+	"bufio"
 	"fmt"
 	"log"
 	"path/filepath"
 
 	"github.com/schollz/progressbar"
 )
+
+func ReadFile(fileName string) {
+
+	r, err := zip.OpenReader(fileName)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer r.Close()
+
+	for _, f := range r.File {
+		ftxt, err := f.Open()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		scanner := bufio.NewScanner(ftxt)
+
+		for scanner.Scan() {
+			//fmt.Println(scanner.Text())
+
+		}
+	}
+}
 
 func main() {
 
@@ -19,7 +44,7 @@ func main() {
 
 	for _, fileName := range files {
 
-		//
+		ReadFile(fileName)
 		bar.Clear()
 		bar.Describe(fmt.Sprintf("Extracting from %q	", filepath.Base(fileName)))
 		bar.Add(1)
