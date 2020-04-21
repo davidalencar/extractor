@@ -6,18 +6,19 @@ import (
 	"fmt"
 	"log"
 	"path/filepath"
+
+	"github.com/schollz/progressbar"
 )
 
-// ReadFile ziped data
+// ReadFile opens the zipped file to read the text file inside
 func ReadFile(fileName string) {
+
 	r, err := zip.OpenReader(fileName)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer r.Close()
 
-	// Iterate through the files in the archive,
-	// printing some of their contents.
 	for _, f := range r.File {
 		ftxt, err := f.Open()
 		if err != nil {
@@ -25,9 +26,10 @@ func ReadFile(fileName string) {
 		}
 
 		scanner := bufio.NewScanner(ftxt)
+
 		for scanner.Scan() {
-			fmt.Println(scanner.Text())
-			break
+			//fmt.Println(scanner.Text())
+			//break
 		}
 	}
 }
@@ -39,11 +41,14 @@ func main() {
 		log.Fatal(err)
 	}
 
+	bar := progressbar.New(len(files))
+
 	for _, fileName := range files {
-		fmt.Printf("Extracting from '%s'", fileName)
-		fmt.Printf("\n")
 
 		ReadFile(fileName)
+		bar.Add(1)
+		fmt.Printf("\n Extracting from '%s'", fileName)
+		fmt.Printf("\n")
 	}
 
 }
