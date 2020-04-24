@@ -7,7 +7,6 @@ import (
 	"io"
 	"log"
 	"path/filepath"
-	"time"
 
 	"github.com/schollz/progressbar"
 )
@@ -17,9 +16,16 @@ func readTxtFile(txtFile io.ReadCloser) {
 	scanner := bufio.NewScanner(txtFile)
 
 	for scanner.Scan() {
-		//fmt.Println(scanner.Text())
-		time.Sleep(1000 * time.Millisecond)
-		break
+
+		line := scanner.Text()
+
+		if line[0:1] == "1" {
+			fmt.Println(line[3:17])
+		}
+		if line[0:1] == "2" {
+			fmt.Println(line)
+			break
+		}
 	}
 }
 
