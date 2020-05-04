@@ -26,6 +26,10 @@ func readTxtFile(txtFile io.ReadCloser) {
 			fmt.Println(line)
 			break
 		}
+		if line[0:1] == "6" {
+			fmt.Println(line)
+			break
+		}
 	}
 }
 
